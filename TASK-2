@@ -1,0 +1,61 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the data from 'Restaurant.xlsx' into a DataFrame
+df_restaurant = pd.read_excel('/content/Restaurant.xlsx')
+
+# Display the first 5 rows of the DataFrame
+print("First 5 rows of df_restaurant:")
+display(df_restaurant.head())
+
+# Analyze 'Price range' column
+print("\nData type of 'Price range' column:", df_restaurant['Price range'].dtype)
+print("\nDescriptive statistics for 'Price range' column:")
+print(df_restaurant['Price range'].describe())
+print("\nUnique values in 'Price range' column:")
+print(df_restaurant['Price range'].unique())
+
+# Define Price Ranges
+price_range_mapping = {
+    1: 'Cheap',
+    2: 'Moderate',
+    3: 'Expensive',
+    4: 'Very Expensive'
+}
+
+df_restaurant['Price Range Label'] = df_restaurant['Price range'].map(price_range_mapping)
+
+print("\nFirst 5 rows with new 'Price Range Label' column:")
+print(df_restaurant[['Price range', 'Price Range Label']].head())
+print("\nUnique values in 'Price Range Label' column:")
+print(df_restaurant['Price Range Label'].unique())
+
+# Calculate Price Range Frequency
+price_range_counts = df_restaurant['Price Range Label'].value_counts()
+print("\nFrequency of each Price Range Label:")
+print(price_range_counts)
+
+# Visualize Price Range Distribution
+plt.figure(figsize=(10, 6))
+price_range_counts.plot(kind='bar', color='skyblue')
+plt.title('Distribution of Restaurants by Price Range')
+plt.xlabel('Price Range')
+plt.ylabel('Number of Restaurants')
+plt.xticks(rotation=45, ha='right')
+plt.tight_layout()
+plt.show()
+
+# Calculate Average Rating by Price Range
+average_rating_by_price_range = df_restaurant.groupby('Price Range Label')['Aggregate rating'].mean().sort_values(ascending=False)
+print("\nAverage 'Aggregate rating' for each Price Range Label:")
+print(average_rating_by_price_range)
+
+# Identify Color of Highest Average Rating
+average_rating_by_color = df_restaurant.groupby('Rating color')['Aggregate rating'].mean().sort_values(ascending=False)
+print("\nAverage 'Aggregate rating' for each Rating color:")
+print(average_rating_by_color)
+
+highest_rating_color = average_rating_by_color.index[0]
+highest_average_rating = average_rating_by_color.iloc[0]
+
+print(f"\nThe color that represents the highest average rating is '{highest_rating_color}' with an average rating of {highest_average_rating:.2f}.")
